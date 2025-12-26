@@ -22,7 +22,9 @@ class LoanService:
 
     def create_loan(self, data: LoanCreate):
         if self.repo.book_has_active_loan(data.book_id):
-            raise BookAlreadyBorrowedException("A book cannot be loaned if it currently has an active loan")
+            raise BookAlreadyBorrowedException(
+                "A book cannot be loaned if it currently has an active loan"
+            )
 
         ldate = self._parse_dt(data.loan_date)
         if not ldate:

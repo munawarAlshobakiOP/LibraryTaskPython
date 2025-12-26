@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
-from app.api import author, book, borrower, loan
+from app.api import author, book, borrower, loan, auth
+from app.core.security import require_api_key_and_jwt
 from app.core.exceptions import (
     NotFoundException,
     BookAlreadyBorrowedException,
@@ -9,15 +10,19 @@ from app.core.exceptions import (
     BorrowerNotFoundException,
 )
 from app.core.db import Base, engine
+from dotenv import load_dotenv
+from fastapi import Depends
 
+load_dotenv()
 Base.metadata.create_all(engine)
 
 app = FastAPI(title="Library Management System", version="1.0.0")
 
-app.include_router(author.router)
-app.include_router(book.router)
-app.include_router(borrower.router)
-app.include_router(loan.router)
+app.include_router(auth.router)
+app.include_router(author.router, dependencies=[Depends(require_api_key_and_jwt)])
+app.include_router(book.router, dependencies=[Depends(require_api_key_and_jwt)])
+app.include_router(borrower.router, dependencies=[Depends(require_api_key_and_jwt)])
+app.include_router(loan.router, dependencies=[Depends(require_api_key_and_jwt)])
 
 
 @app.exception_handler(NotFoundException)
