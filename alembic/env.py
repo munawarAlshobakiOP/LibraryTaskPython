@@ -22,7 +22,7 @@ load_dotenv()
 # add your model's MetaData object here
 # for 'autogenerate' support
 from app.core.db import Base
-from app.models import author, book, borrower, loan
+from app.models import author, book, borrower, loan, user
 
 target_metadata = Base.metadata
 
