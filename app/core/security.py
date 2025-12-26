@@ -4,6 +4,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
+from fastapi.security import APIKeyHeader
+from fastapi import Security
 
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -37,16 +39,22 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-def require_api_key(x_api_key: str | None = Header(default=None, alias="X-API-KEY")):
-    expected_key = os.getenv("API_KEY")
+api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
+
+def validate_api_key(token: str) -> bool:
+    """Explicitly checks if the provided token matches the server's secret API_KEY."""
+    expected_key = os.getenv("API_KEY")
     if not expected_key:
         raise HTTPException(
             status_code=500,
             detail="API_KEY not configured on server",
         )
+    return token == expected_key
 
-    if not x_api_key or x_api_key != expected_key:
+
+def require_api_key(x_api_key: str | None = Security(api_key_header)):
+    if not x_api_key or not validate_api_key(x_api_key):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key",
