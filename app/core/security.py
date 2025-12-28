@@ -43,7 +43,7 @@ api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 
 def validate_api_key(token: str) -> bool:
-    """Explicitly checks if the provided token matches the server's secret API_KEY."""
+
     expected_key = os.getenv("API_KEY")
     if not expected_key:
         raise HTTPException(

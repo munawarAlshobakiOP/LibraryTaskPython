@@ -23,10 +23,10 @@ class BookService:
             raise NotFoundException("Author does not exist")
 
         new_book = BookModel(
-            Title=book_data.title,
-            ISBN=book_data.isbn,
-            PublishedDate=book_data.published_date,
-            AuthorId=book_data.author_id,
+            title=book_data.title,
+            isbn=book_data.isbn,
+            published_date=book_data.published_date,
+            author_id=book_data.author_id,
         )
 
         created = self.book_repo.create_book(new_book)
@@ -52,17 +52,16 @@ class BookService:
             raise NotFoundException("Book not found")
 
         if book_data.title:
-            book.Title = book_data.title
+            book.title = book_data.title
         if book_data.isbn:
-            book.ISBN = book_data.isbn
+            book.isbn = book_data.isbn
         if book_data.published_date:
-            book.PublishedDate = book_data.published_date
-
+            book.published_date = book_data.published_date
         if book_data.author_id:
             exists = self.author_repo.get_author_by_id(book_data.author_id)
             if not exists:
                 raise NotFoundException("Author does not exist")
-            book.AuthorId = book_data.author_id
+            book.author_id = book_data.author_id
 
         updated = self.book_repo.update_book(book)
         return self._build_book_response(updated)
@@ -79,16 +78,16 @@ class BookService:
         self.book_repo.delete_book(book_id)
 
     def _build_book_response(self, book: BookModel) -> BookSchema:
-        author = self.author_repo.get_author_by_id(book.AuthorId)
-        author_name = author.Name if author else None
+        author = self.author_repo.get_author_by_id(book.author_id)
+        author_name = author.name if author else None
 
         res = {
-            "Id": book.Id,
-            "Title": book.Title,
-            "ISBN": book.ISBN,
-            "PublishedDate": book.PublishedDate,
-            "AuthorId": book.AuthorId,
-            "AuthorName": author_name,
+            "id": book.id,
+            "title": book.title,
+            "isbn": book.isbn,
+            "published_date": book.published_date,
+            "author_id": book.author_id,
+            "author_name": author_name,
         }
 
         return BookSchema.model_validate(res)

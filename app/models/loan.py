@@ -6,12 +6,12 @@ from app.core.db import Base
 
 class Loan(Base):
     __tablename__ = "Loans"
-    Id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    BookId = Column(UUID(as_uuid=True), ForeignKey("Books.Id", ondelete="CASCADE"))
-    BorrowerId = Column(
-        UUID(as_uuid=True), ForeignKey("Borrowers.Id", ondelete="CASCADE")
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    book_id = Column(UUID(as_uuid=True), ForeignKey("Books.id", ondelete="CASCADE"))
+    borrower_id = Column(
+        UUID(as_uuid=True), ForeignKey("Borrowers.id", ondelete="CASCADE")
     )
-    LoanDate = Column(DateTime, default=datetime.utcnow)
-    ReturnDate = Column(DateTime, nullable=True)
+    loan_date = Column(DateTime, default=datetime.utcnow)
+    return_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

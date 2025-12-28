@@ -12,7 +12,7 @@ class SQLBorrowerRepository(BorrowerRepositoryInterface):
         return self.session.query(Borrower).all()
 
     def get_borrower_by_id(self, bid: str) -> Optional[Borrower]:
-        return self.session.query(Borrower).filter(Borrower.Id == bid).first()
+        return self.session.query(Borrower).filter(Borrower.id == bid).first()
 
     def create_borrower(self, b: Borrower) -> Borrower:
         self.session.add(b)
@@ -32,4 +32,4 @@ class SQLBorrowerRepository(BorrowerRepositoryInterface):
             self.session.flush()
 
     def get_borrower_by_email(self, email_addr: str) -> Optional[Borrower]:
-        return self.session.query(Borrower).filter(Borrower.Email == email_addr).first()
+        return self.session.query(Borrower).filter(Borrower.email == email_addr).first()

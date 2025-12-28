@@ -12,7 +12,7 @@ class SQLAuthorRepository(AuthorRepositoryInterface):
         return self.session.query(Author).all()
 
     def get_author_by_id(self, aid: str) -> Optional[Author]:
-        return self.session.query(Author).filter(Author.Id == aid).first()
+        return self.session.query(Author).filter(Author.id == aid).first()
 
     def create_author(self, new_author: Author) -> Author:
         self.session.add(new_author)

@@ -5,8 +5,8 @@ from uuid import UUID
 
 
 class AuthorBase(BaseModel):
-    name: str = Field(alias="Name")
-    bio: Optional[str] = Field(None, alias="Bio")
+    name: str = Field()
+    bio: Optional[str] = Field(None)
 
 
 class AuthorCreate(AuthorBase):
@@ -14,12 +14,12 @@ class AuthorCreate(AuthorBase):
 
 
 class AuthorUpdate(BaseModel):
-    name: Optional[str] = Field(None, alias="Name")
-    bio: Optional[str] = Field(None, alias="Bio")
+    name: Optional[str] = Field(None)
+    bio: Optional[str] = Field(None)
 
 
 class Author(AuthorBase):
-    id: UUID = Field(alias="Id")
+    id: UUID = Field()
 
     class Config:
         from_attributes = True

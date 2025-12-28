@@ -13,7 +13,7 @@ class SQLBookRepository(BookRepositoryInterface):
         return self.session.query(Book).all()
 
     def get_book_by_id(self, book_id: str) -> Optional[Book]:
-        res = self.session.query(Book).filter(Book.Id == book_id).first()
+        res = self.session.query(Book).filter(Book.id == book_id).first()
         return res
 
     def create_book(self, book: Book) -> Book:
@@ -36,10 +36,10 @@ class SQLBookRepository(BookRepositoryInterface):
     def has_active_loan(self, book_id: str) -> bool:
         check = (
             self.session.query(Loan)
-            .filter(Loan.BookId == book_id, Loan.ReturnDate.is_(None))
+            .filter(Loan.book_id == book_id, Loan.return_date.is_(None))
             .first()
         )
         return check is not None
 
     def get_books_by_author_id(self, author_id: str) -> List[Book]:
-        return self.session.query(Book).filter(Book.AuthorId == author_id).all()
+        return self.session.query(Book).filter(Book.author_id == author_id).all()

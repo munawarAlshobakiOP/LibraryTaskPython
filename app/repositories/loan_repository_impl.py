@@ -10,16 +10,16 @@ class SQLLoanRepository(LoanRepositoryInterface):
         self.session = db_session
 
     def get_active_loans(self) -> List[Loan]:
-        return self.session.query(Loan).filter(Loan.ReturnDate.is_(None)).all()
+        return self.session.query(Loan).filter(Loan.return_date.is_(None)).all()
 
     def get_loans_by_borrower_id(self, borrower_id: str) -> List[Loan]:
-        res = self.session.query(Loan).filter(Loan.BorrowerId == borrower_id).all()
+        res = self.session.query(Loan).filter(Loan.borrower_id == borrower_id).all()
         return res
 
     def get_active_loans_by_borrower(self, borrower_id: str) -> List[Loan]:
         return (
             self.session.query(Loan)
-            .filter(Loan.BorrowerId == borrower_id, Loan.ReturnDate.is_(None))
+            .filter(Loan.borrower_id == borrower_id, Loan.return_date.is_(None))
             .all()
         )
 
@@ -43,7 +43,7 @@ class SQLLoanRepository(LoanRepositoryInterface):
     def return_loan(self, loan_id: str) -> Loan:
         target_loan = self.get_loan_by_id(loan_id)
         if target_loan:
-            target_loan.ReturnDate = datetime.utcnow()
+            target_loan.return_date = datetime.utcnow()
             self.session.flush()
             self.session.refresh(target_loan)
         return target_loan
@@ -51,7 +51,7 @@ class SQLLoanRepository(LoanRepositoryInterface):
     def book_has_active_loan(self, book_id: str) -> bool:
         active = (
             self.session.query(Loan)
-            .filter(Loan.BookId == book_id, Loan.ReturnDate.is_(None))
+            .filter(Loan.book_id == book_id, Loan.return_date.is_(None))
             .first()
         )
         return active is not None

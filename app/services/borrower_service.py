@@ -34,9 +34,9 @@ class BorrowerService:
 
     def create_borrower(self, data: BorrowerCreate) -> BorrowerSchema:
         obj = BorrowerModel(
-            Name=data.name,
-            Email=data.email,
-            Phone=data.phone,
+            name=data.name,
+            email=data.email,
+            phone=data.phone,
         )
         res = self.borrower_repo.create_borrower(obj)
         return BorrowerSchema.model_validate(res)
@@ -47,12 +47,11 @@ class BorrowerService:
             raise NotFoundException("Borrower not found")
 
         if data.name is not None:
-            borrower.Name = data.name
+            borrower.name = data.name
         if data.email is not None:
-            borrower.Email = data.email
+            borrower.email = data.email
         if data.phone is not None:
-            borrower.Phone = data.phone
-
+            borrower.phone = data.phone
         updated = self.borrower_repo.update_borrower(borrower)
         return BorrowerSchema.model_validate(updated)
 

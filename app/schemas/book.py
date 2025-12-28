@@ -1,13 +1,14 @@
+from datetime import date
 from pydantic import BaseModel, Field
 from typing import Optional
 from uuid import UUID
 
 
 class BookBase(BaseModel):
-    title: str = Field(alias="Title")
-    isbn: str = Field(alias="ISBN")
-    published_date: str = Field(alias="PublishedDate")
-    author_id: UUID = Field(alias="AuthorId")
+    title: str = Field()
+    isbn: str = Field()
+    published_date: date = Field()
+    author_id: UUID = Field()
 
 
 class BookCreate(BookBase):
@@ -15,15 +16,15 @@ class BookCreate(BookBase):
 
 
 class BookUpdate(BaseModel):
-    title: Optional[str] = Field(None, alias="Title")
-    isbn: Optional[str] = Field(None, alias="ISBN")
-    published_date: Optional[str] = Field(None, alias="PublishedDate")
-    author_id: Optional[UUID] = Field(None, alias="AuthorId")
+    title: Optional[str] = Field(None)
+    isbn: Optional[str] = Field(None)
+    published_date: Optional[date] = Field(None)
+    author_id: Optional[UUID] = Field(None)
 
 
 class Book(BookBase):
-    id: UUID = Field(alias="Id")
-    author_name: Optional[str] = Field(None, alias="AuthorName")
+    id: UUID = Field()
+    author_name: Optional[str] = Field(None)
 
     class Config:
         from_attributes = True

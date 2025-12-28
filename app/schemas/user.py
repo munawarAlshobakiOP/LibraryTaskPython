@@ -5,16 +5,16 @@ from typing import Optional
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., alias="Username")
+    username: str = Field(...)
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., alias="Password")
+    password: str = Field(...)
 
 
 class User(UserBase):
-    id: UUID = Field(..., alias="Id")
-    created_at: datetime = Field(..., alias="CreatedAt")
+    id: UUID = Field(...)
+    created_at: datetime = Field(...)
 
     class Config:
         from_attributes = True

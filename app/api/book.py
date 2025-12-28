@@ -22,7 +22,7 @@ def list_books(svc: BookService = Depends(get_svc)):
 
 
 @router.get("/{id}")
-def fetch_book(id: str, svc: BookService = Depends(get_svc)):
+def get_book(id: str, svc: BookService = Depends(get_svc)):
     return svc.get_book_by_id(id)
 
 

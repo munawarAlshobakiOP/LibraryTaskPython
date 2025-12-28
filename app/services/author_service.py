@@ -14,7 +14,7 @@ class AuthorService:
         self.book_repo = book_repo
 
     def create_author(self, data: AuthorCreate):
-        obj = AuthorModel(Name=data.name, Bio=data.bio)
+        obj = AuthorModel(name=data.name, bio=data.bio)
         res = self.author_repo.create_author(obj)
         return AuthorSchema.model_validate(res)
 
@@ -50,10 +50,10 @@ class AuthorService:
             raise NotFoundException("Author not found")
 
         if data.name is not None:
-            author.Name = data.name
+            author.name = data.name
 
         if data.bio is not None:
-            author.Bio = data.bio
+            author.bio = data.bio
 
         updated = self.author_repo.update_author(author)
         return AuthorSchema.model_validate(updated)

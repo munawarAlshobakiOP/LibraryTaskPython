@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from app.core.db import SessionLocal
+from app.core.db import session_local
 
 
 def get_db() -> Session:
-    db = SessionLocal()
+    db = session_local()
     try:
         yield db
         db.commit()

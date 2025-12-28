@@ -33,10 +33,10 @@ class LoanService:
         rdate = self._parse_dt(data.return_date) if data.return_date else None
 
         loan_item = LoanModel(
-            BookId=data.book_id,
-            BorrowerId=data.borrower_id,
-            LoanDate=ldate,
-            ReturnDate=rdate,
+            book_id=data.book_id,
+            borrower_id=data.borrower_id,
+            loan_date=ldate,
+            return_date=rdate,
         )
 
         created = self.repo.create_loan(loan_item)
@@ -48,7 +48,7 @@ class LoanService:
         if loan is None:
             raise NotFoundException("Loan not found")
 
-        if loan.ReturnDate is not None:
+        if loan.return_date is not None:
             return LoanSchema.model_validate(loan)
 
         returned = self.repo.return_loan(loan_id)

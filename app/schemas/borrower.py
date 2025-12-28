@@ -7,9 +7,9 @@ PHONE_REGEX = re.compile(r"^\+[1-9]\d{1,14}$")
 
 
 class BorrowerBase(BaseModel):
-    name: str = Field(alias="Name")
-    email: str = Field(alias="Email")
-    phone: str = Field(alias="Phone")
+    name: str = Field()
+    email: str = Field()
+    phone: str = Field()
 
     @field_validator("phone")
     @classmethod
@@ -29,13 +29,13 @@ class BorrowerCreate(BorrowerBase):
 
 
 class BorrowerUpdate(BorrowerBase):
-    name: Optional[str] = Field(None, alias="Name")
-    email: Optional[str] = Field(None, alias="Email")
-    phone: Optional[str] = Field(None, alias="Phone")
+    name: Optional[str] = Field(None)
+    email: Optional[str] = Field(None)
+    phone: Optional[str] = Field(None)
 
 
 class Borrower(BorrowerBase):
-    id: UUID = Field(alias="Id")
+    id: UUID = Field()
 
     class Config:
         from_attributes = True
