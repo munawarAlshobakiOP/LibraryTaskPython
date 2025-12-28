@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+import uvicorn
+from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
+from dotenv import load_dotenv
 from app.api import author, book, borrower, loan, auth
 from app.core.security import require_api_key_and_jwt
 from app.core.exceptions import (
@@ -10,11 +12,10 @@ from app.core.exceptions import (
     BorrowerNotFoundException,
 )
 from app.core.db import Base, engine
-from dotenv import load_dotenv
-from fastapi import Depends
+
 
 load_dotenv()
-Base.metadata.create_all(engine)
+##Base.metadata.create_all(engine)
 
 app = FastAPI(title="Library Management System", version="1.0.0")
 
@@ -27,26 +28,41 @@ app.include_router(loan.router, dependencies=[Depends(require_api_key_and_jwt)])
 
 @app.exception_handler(NotFoundException)
 async def handle_not_found(request, exc: NotFoundException):
+    """
+    Handle cases when a requested resource is not found.
+    """
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 @app.exception_handler(BookAlreadyBorrowedException)
 async def handle_already_borrowed(request, exc: BookAlreadyBorrowedException):
+    """
+    Handle cases when a book is already borrowed.
+    """
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
 @app.exception_handler(ActiveLoanExistsException)
 async def handle_active_loan(request, exc: ActiveLoanExistsException):
+    """
+    Handle cases when an active loan exists.
+    """
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
 @app.exception_handler(BorrowerNotFoundException)
 async def handle_borrower_not_found(request, exc: BorrowerNotFoundException):
+    """
+    Handle cases when a borrower is not found.
+    """
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 @app.exception_handler(IntegrityError)
 async def handle_integrity_error(request, exc: IntegrityError):
+    """
+    Handle cases when a data integrity violation occurs.
+    """
     return JSONResponse(
         status_code=409,
         content={"detail": "Data integrity violation"},
@@ -55,10 +71,13 @@ async def handle_integrity_error(request, exc: IntegrityError):
 
 @app.get("/")
 def home():
+    """
+    Home endpoint returning a welcome message.
+    """
     return {"message": "Welcome to Library Management System"}
 
 
 if __name__ == "__main__":
-    import uvicorn
+    """Run the application using Uvicorn."""
 
     uvicorn.run(app, host="0.0.0.0", port=8000)

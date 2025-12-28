@@ -1,12 +1,12 @@
+from app.core.exceptions import ActiveLoanExistsException, NotFoundException
+from app.models.borrower import Borrower as BorrowerModel
 from app.repositories.borrower_repository import BorrowerRepositoryInterface
+from app.repositories.loan_repository import LoanRepositoryInterface
 from app.schemas.borrower import (
     BorrowerCreate,
     BorrowerUpdate,
     Borrower as BorrowerSchema,
 )
-from app.models.borrower import Borrower as BorrowerModel
-from app.repositories.loan_repository import LoanRepositoryInterface
-from app.core.exceptions import NotFoundException, ActiveLoanExistsException
 from app.schemas.loan import Loan as LoanSchema
 
 
@@ -16,10 +16,16 @@ class BorrowerService:
         borrower_repo: BorrowerRepositoryInterface,
         loan_repo: LoanRepositoryInterface,
     ):
+        """
+        Initialize the BorrowerService with the given repositories.
+        """
         self.borrower_repo = borrower_repo
         self.loan_repo = loan_repo
 
     def get_borrowers(self):
+        """
+        Retrieve all borrowers.
+        """
         records = self.borrower_repo.get_borrowers()
         blist = []
         for r in records:

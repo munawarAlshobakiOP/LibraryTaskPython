@@ -1,9 +1,9 @@
-from app.repositories.book_repository import BookRepositoryInterface
+from app.core.exceptions import ActiveLoanExistsException, NotFoundException
+from app.models.book import Book as BookModel
 from app.repositories.author_repository import AuthorRepositoryInterface
+from app.repositories.book_repository import BookRepositoryInterface
 from app.repositories.loan_repository import LoanRepositoryInterface
 from app.schemas.book import BookCreate, BookUpdate, Book as BookSchema
-from app.models.book import Book as BookModel
-from app.core.exceptions import NotFoundException, ActiveLoanExistsException
 
 
 class BookService:
@@ -13,11 +13,17 @@ class BookService:
         author_repo: AuthorRepositoryInterface,
         loan_repo: LoanRepositoryInterface,
     ):
+        """
+        Initialize the BookService with the given repositories.
+        """
         self.book_repo = book_repo
         self.author_repo = author_repo
         self.loan_repo = loan_repo
 
     def create_book(self, book_data: BookCreate):
+        """
+        Create a new book.
+        """
         author = self.author_repo.get_author_by_id(book_data.author_id)
         if author is None:
             raise NotFoundException("Author does not exist")
@@ -33,6 +39,9 @@ class BookService:
         return self._build_book_response(created)
 
     def get_book_by_id(self, book_id: str):
+        """
+        Retrieve a book by its ID.
+        """
         book = self.book_repo.get_book_by_id(book_id)
         if book is None:
             raise NotFoundException("Book not found")
@@ -40,6 +49,9 @@ class BookService:
         return self._build_book_response(book)
 
     def get_books(self):
+        """
+        Retrieve all books.
+        """
         all_books = self.book_repo.get_books()
         result = []
         for book in all_books:
@@ -47,6 +59,9 @@ class BookService:
         return result
 
     def update_book(self, book_id: str, book_data: BookUpdate):
+        """
+        Update an existing book.
+        """
         book = self.book_repo.get_book_by_id(book_id)
         if not book:
             raise NotFoundException("Book not found")
@@ -67,6 +82,9 @@ class BookService:
         return self._build_book_response(updated)
 
     def delete_book(self, book_id: str):
+        """
+        Delete a book by its ID.
+        """
         book = self.book_repo.get_book_by_id(book_id)
         if book is None:
             raise NotFoundException("Book not found")
@@ -78,6 +96,9 @@ class BookService:
         self.book_repo.delete_book(book_id)
 
     def _build_book_response(self, book: BookModel) -> BookSchema:
+        """
+        Build a BookSchema response from a BookModel instance.
+        """
         author = self.author_repo.get_author_by_id(book.author_id)
         author_name = author.name if author else None
 
