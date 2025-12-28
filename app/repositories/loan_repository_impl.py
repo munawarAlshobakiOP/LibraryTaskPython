@@ -27,7 +27,7 @@ class SQLLoanRepository(LoanRepositoryInterface):
         return self.session.query(Loan).all()
 
     def get_loan_by_id(self, loan_id: str) -> Optional[Loan]:
-        return self.session.query(Loan).filter(Loan.Id == loan_id).first()
+        return self.session.query(Loan).filter(Loan.id == loan_id).first()
 
     def create_loan(self, loan_obj: Loan) -> Loan:
         self.session.add(loan_obj)
