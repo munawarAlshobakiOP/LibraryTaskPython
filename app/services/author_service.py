@@ -25,7 +25,11 @@ class AuthorService:
             raise NotFoundException("Author not found")
 
         books = self.book_repo.get_books_by_author_id(auth_id)
-        blist = [BookSchema.model_validate(b) for b in books]
+        blist = []
+        for b in books:
+            book_schema = BookSchema.model_validate(b)
+            book_schema.author_name = author.name
+            blist.append(book_schema)
 
         return {
             "author": AuthorSchema.model_validate(author),
