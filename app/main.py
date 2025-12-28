@@ -15,7 +15,7 @@ from app.core.db import Base, engine
 
 
 load_dotenv()
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 app = FastAPI(title="Library Management System", version="1.0.0")
 
