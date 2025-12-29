@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
+
 from app.core.dependencies import get_db
 from app.repositories.borrower_repository_impl import SQLBorrowerRepository
 from app.repositories.loan_repository_impl import SQLLoanRepository

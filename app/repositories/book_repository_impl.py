@@ -1,5 +1,7 @@
 from typing import List, Optional
+
 from sqlalchemy.orm import Session
+
 from app.models.book import Book
 from app.models.loan import Loan
 from app.repositories.book_repository import BookRepositoryInterface

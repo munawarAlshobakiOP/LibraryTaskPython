@@ -1,5 +1,7 @@
 from typing import List, Optional
+
 from sqlalchemy.orm import Session
+
 from app.models.borrower import Borrower
 from app.repositories.borrower_repository import BorrowerRepositoryInterface
 

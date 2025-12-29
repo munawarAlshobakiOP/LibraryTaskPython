@@ -1,8 +1,10 @@
 import uvicorn
+
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
+
 from app.api import author, book, borrower, loan, auth
 from app.core.security import require_api_key_and_jwt
 from app.core.exceptions import (
@@ -11,7 +13,6 @@ from app.core.exceptions import (
     ActiveLoanExistsException,
     BorrowerNotFoundException,
 )
-from app.core.db import Base, engine
 
 
 load_dotenv()

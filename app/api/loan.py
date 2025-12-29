@@ -1,6 +1,8 @@
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
 from app.core.dependencies import get_db
 from app.repositories.loan_repository_impl import SQLLoanRepository
 from app.schemas.loan import LoanCreate
