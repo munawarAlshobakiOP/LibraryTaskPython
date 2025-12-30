@@ -13,7 +13,8 @@ from app.core.exceptions import (
     ActiveLoanExistsException,
     BorrowerNotFoundException,
 )
-
+from app.schemas.internal_event import LoanValidationFailed
+from app.core.events import publish_internal_event
 
 load_dotenv()
 # Base.metadata.create_all(engine)
@@ -40,6 +41,11 @@ async def handle_already_borrowed(request, exc: BookAlreadyBorrowedException):
     """
     Handle cases when a book is already borrowed.
     """
+    publish_internal_event(
+        LoanValidationFailed(
+            reason="BookAlreadyBorrowed", validation_errors={"message": str(exc)}
+        )
+    )
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
@@ -48,6 +54,11 @@ async def handle_active_loan(request, exc: ActiveLoanExistsException):
     """
     Handle cases when an active loan exists.
     """
+    publish_internal_event(
+        LoanValidationFailed(
+            reason="ActiveLoanExists", validation_errors={"message": str(exc)}
+        )
+    )
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 

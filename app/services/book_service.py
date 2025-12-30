@@ -1,9 +1,15 @@
+from datetime import datetime
+from uuid import uuid4
+from typing import Optional
+
 from app.core.exceptions import ActiveLoanExistsException, NotFoundException
 from app.models.book import Book as BookModel
 from app.repositories.author_repository import AuthorRepositoryInterface
 from app.repositories.book_repository import BookRepositoryInterface
 from app.repositories.loan_repository import LoanRepositoryInterface
 from app.schemas.book import BookCreate, BookUpdate, Book as BookSchema
+from app.schemas.domain_event import BookCreated, BookUpdated, BookDeleted
+from app.core.events import publish_domain_event
 
 
 class BookService:
@@ -34,9 +40,16 @@ class BookService:
             published_date=book_data.published_date,
             author_id=book_data.author_id,
         )
-
         created = self.book_repo.create_book(new_book)
-        return self._build_book_response(created)
+
+        schema_data = self._build_book_response(created)
+        event = BookCreated(
+            aggregate_id=created.id,
+            data=schema_data.model_dump(mode="json"),
+        )
+        publish_domain_event(event)
+
+        return schema_data
 
     def get_book_by_id(self, book_id: str):
         """
@@ -79,7 +92,15 @@ class BookService:
             book.author_id = book_data.author_id
 
         updated = self.book_repo.update_book(book)
-        return self._build_book_response(updated)
+        schema_data = self._build_book_response(updated)
+        event = BookUpdated(
+            aggregate_id=updated.id,
+            data=schema_data.model_dump(mode="json"),
+        )
+
+        publish_domain_event(event)
+
+        return schema_data
 
     def delete_book(self, book_id: str):
         """
@@ -93,7 +114,14 @@ class BookService:
         if has_active_loan:
             raise ActiveLoanExistsException("Cannot delete book with active loans")
 
+        event = BookDeleted(
+            aggregate_id=book.id,
+            data=self._build_book_response(book).model_dump(mode="json"),
+        )
+
         self.book_repo.delete_book(book_id)
+
+        publish_domain_event(event)
 
     def _build_book_response(self, book: BookModel) -> BookSchema:
         """

@@ -25,8 +25,6 @@ def borrower_loader(db: Session = Depends(get_db)) -> BorrowerService:
 def list_borrowers(svc: BorrowerService = Depends(borrower_loader)):
     """
     List all borrowers.
-    Args:
-        svc (BorrowerService): The borrower service instance.
     Returns:
         A list of all borrowers.
     """
@@ -34,20 +32,22 @@ def list_borrowers(svc: BorrowerService = Depends(borrower_loader)):
 
 
 @router.get("/{id}")
-def get_profile(id: str, svc: BorrowerService = Depends(borrower_loader)):
+def get_borrower(id: str, svc: BorrowerService = Depends(borrower_loader)):
     """
-    Get the profile of a specific borrower along with their loans.
+    Get a borrower by their ID.
     Args:
         id (str): The ID of the borrower.
         svc (BorrowerService): The borrower service instance.
     Returns:
-        The borrower's profile with their loans.
+        The Borrower object if found, otherwise None.
     """
-    return svc.get_borrower_profile_with_loans(id)
+    return svc.get_borrower_by_id(id)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def add_new_user(data: BorrowerCreate, svc: BorrowerService = Depends(borrower_loader)):
+def add_new_borrower(
+    data: BorrowerCreate, svc: BorrowerService = Depends(borrower_loader)
+):
     """
     Add a new borrower.
     Args:
@@ -60,29 +60,30 @@ def add_new_user(data: BorrowerCreate, svc: BorrowerService = Depends(borrower_l
 
 
 @router.put("/{id}")
-def update_user_info(
+def modify_borrower(
     id: str, data: BorrowerUpdate, svc: BorrowerService = Depends(borrower_loader)
 ):
     """
     Update a borrower's information.
-    Args:
-        id (str): The ID of the borrower.
-        data (BorrowerUpdate): The updated borrower data.
-        svc (BorrowerService): The borrower service instance.
-    Returns:
-        The updated borrower.
     """
     return svc.update_borrower(id, data)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_user(id: str, svc: BorrowerService = Depends(borrower_loader)):
+def remove_borrower(id: str, svc: BorrowerService = Depends(borrower_loader)):
     """
     Remove a borrower.
     Args:
         id (str): The ID of the borrower to delete.
         svc (BorrowerService): The borrower service instance.
-    Returns:
-        None.
+
     """
     svc.delete_borrower(id)
+
+
+@router.get("/{id}/loans")
+def get_borrower_loans(id: str, svc: BorrowerService = Depends(borrower_loader)):
+    """
+    Get a borrower's profile along with their loans.
+    """
+    return svc.get_borrower_profile_with_loans(id)

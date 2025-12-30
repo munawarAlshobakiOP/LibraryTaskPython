@@ -1,14 +1,22 @@
+from datetime import datetime
+from uuid import uuid4
+from typing import Optional
+
 from app.core.exceptions import NotFoundException
 from app.models.author import Author as AuthorModel
 from app.repositories.author_repository import AuthorRepositoryInterface
 from app.repositories.book_repository import BookRepositoryInterface
 from app.schemas.author import AuthorCreate, AuthorUpdate, Author as AuthorSchema
 from app.schemas.book import Book as BookSchema
+from app.schemas.domain_event import AuthorCreated, AuthorUpdated, AuthorDeleted
+from app.core.events import publish_domain_event
 
 
 class AuthorService:
     def __init__(
-        self, author_repo: AuthorRepositoryInterface, book_repo: BookRepositoryInterface
+        self,
+        author_repo: AuthorRepositoryInterface,
+        book_repo: BookRepositoryInterface,
     ):
         """
         Initialize the AuthorService with the given repositories.
@@ -22,7 +30,16 @@ class AuthorService:
         """
         obj = AuthorModel(name=data.name, bio=data.bio)
         res = self.author_repo.create_author(obj)
-        return AuthorSchema.model_validate(res)
+
+        schema_data = AuthorSchema.model_validate(res)
+        event = AuthorCreated(
+            aggregate_id=res.id,
+            data=schema_data.model_dump(mode="json"),
+        )
+
+        publish_domain_event(event)
+
+        return schema_data
 
     def get_author_by_id(self, auth_id: str):
         """
@@ -75,7 +92,16 @@ class AuthorService:
             author.bio = data.bio
 
         updated = self.author_repo.update_author(author)
-        return AuthorSchema.model_validate(updated)
+
+        schema_data = AuthorSchema.model_validate(updated)
+        event = AuthorUpdated(
+            aggregate_id=updated.id,
+            data=schema_data.model_dump(mode="json"),
+        )
+
+        publish_domain_event(event)
+
+        return schema_data
 
     def delete_author(self, aid: str):
         """
@@ -85,4 +111,11 @@ class AuthorService:
         if not author:
             raise NotFoundException("Author not found")
 
+        event = AuthorDeleted(
+            aggregate_id=author.id,
+            data=AuthorSchema.model_validate(author).model_dump(mode="json"),
+        )
+
         self.author_repo.delete_author(aid)
+
+        publish_domain_event(event)
