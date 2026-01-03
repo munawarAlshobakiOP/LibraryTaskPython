@@ -18,3 +18,10 @@ class LoanValidationFailed(InternalEvent):
 class SecurityAuthFailed(InternalEvent):
     event_type: str = "Security.auth_failed"
     reason: str
+
+
+class KafkaPublishFailed(InternalEvent):
+    event_type: str = "kafka.publish_failed"
+    reason: str
+    topic: str
+    original_error: str
