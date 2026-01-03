@@ -7,6 +7,7 @@ from app.schemas.internal_event import KafkaPublishFailed, InternalEvent
 
 _producer: Optional[KafkaProducer] = None
 
+
 def get_kafka_producer() -> KafkaProducer:
     global _producer
     if _producer is None:
@@ -17,23 +18,24 @@ def get_kafka_producer() -> KafkaProducer:
                 value_serializer=lambda v: json.dumps(v).encode("utf-8"),
                 api_version_auto_timeout_ms=1000,
                 request_timeout_ms=1000,
-                max_block_ms=1000
+                max_block_ms=1000,
             )
-        except Exception as e:
+        except Exception:
             return None
     return _producer
+
 
 def publish_message(topic: str, message: dict):
     """
     Publishes a message to Kafka.
     """
     producer = get_kafka_producer()
-    
+
     if producer is None:
         return KafkaPublishFailed(
             reason="Kafka producer is not initialized",
             topic=topic,
-            original_error="Producer is None"
+            original_error="Producer is None",
         )
 
     try:
@@ -44,5 +46,5 @@ def publish_message(topic: str, message: dict):
         return KafkaPublishFailed(
             reason="Failed to publish message to Kafka",
             topic=topic,
-            original_error=str(e)
+            original_error=str(e),
         )

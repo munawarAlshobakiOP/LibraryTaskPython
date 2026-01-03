@@ -32,11 +32,12 @@ async def startup_event():
     print("Testing Kafka connection...")
     test_message = {"test": "startup_connection_check"}
     error = publish_message("system_startup", test_message)
-    
+
     if error:
         publish_internal_event(error)
     else:
         print("Kafka connection successful!")
+
 
 app.include_router(auth.router)
 app.include_router(author.router, dependencies=[Depends(require_api_key_and_jwt)])
