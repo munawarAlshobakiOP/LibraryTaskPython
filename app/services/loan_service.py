@@ -1,13 +1,21 @@
+from uuid import uuid4
 from datetime import datetime
+from typing import Optional
+
 
 from app.core.exceptions import BookAlreadyBorrowedException, NotFoundException
 from app.models.loan import Loan as LoanModel
 from app.repositories.loan_repository import LoanRepositoryInterface
+from app.domain.entities.loan import LoanCreated, LoanReturned
 from app.schemas.loan import LoanCreate, Loan as LoanSchema
+from app.core.events import publish_domain_event
 
 
 class LoanService:
-    def __init__(self, repo: LoanRepositoryInterface):
+    def __init__(
+        self,
+        repo: LoanRepositoryInterface,
+    ):
         """
         Initialize the LoanService with the given repository.
         """
@@ -63,7 +71,15 @@ class LoanService:
         )
 
         created = self.repo.create_loan(loan_item)
-        return LoanSchema.model_validate(created)
+
+        loan_data = LoanSchema.model_validate(created)
+        event = LoanCreated(
+            aggregate_id=created.id,
+            data=loan_data.model_dump(mode="json"),
+        )
+        publish_domain_event(event)
+
+        return loan_data
 
     def return_loan(self, loan_id: str):
         """
@@ -82,7 +98,14 @@ class LoanService:
             return LoanSchema.model_validate(loan)
 
         returned = self.repo.return_loan(loan_id)
-        return LoanSchema.model_validate(returned)
+        loan_data = LoanSchema.model_validate(returned)
+        event = LoanReturned(
+            aggregate_id=returned.id,
+            data=loan_data.model_dump(mode="json"),
+        )
+        publish_domain_event(event)
+
+        return loan_data
 
     def _parse_dt(self, s):
         """

@@ -29,7 +29,7 @@ def create_new_loan(
     """
     Create a new loan.
     Args:
-        payload (LoanCreate): The loan data to create.
+        payload (LoanCreate): The data for creating a new loan.
         svc (LoanService): The loan service instance.
     Returns:
         The created loan.
@@ -38,7 +38,7 @@ def create_new_loan(
 
 
 @router.get("/active")
-def list_active(svc: LoanService = Depends(get_service_instance)):
+def list_active_loans(svc: LoanService = Depends(get_service_instance)):
     """
     List all active loans.
     Args:
@@ -49,27 +49,29 @@ def list_active(svc: LoanService = Depends(get_service_instance)):
     return svc.get_active_loans()
 
 
-@router.put("/{id}/return")
-def handle_return(id: UUID, svc: LoanService = Depends(get_service_instance)):
-    """
-    Return a loan by its ID.
-    Args:
-        id (UUID): The ID of the loan to return.
-        svc (LoanService): The loan service instance.
-    Returns:
-        The updated loan after return.
-    """
-    return svc.return_loan(str(id))
-
-
-@router.get("/history/borrower/{id}")
-def user_loan_history(id: str, svc: LoanService = Depends(get_service_instance)):
+@router.get("/history/{borrower_id}")
+def get_borrower_history(
+    borrower_id: str, svc: LoanService = Depends(get_service_instance)
+):
     """
     Get the loan history for a specific borrower.
     Args:
-        id (str): The ID of the borrower.
+        borrower_id (str): The ID of the borrower.
         svc (LoanService): The loan service instance.
     Returns:
-        A list of loans for the specified borrower.
+        A list of loans for the borrower.
     """
-    return svc.get_borrower_loan_history(id)
+    return svc.get_borrower_loan_history(borrower_id)
+
+
+@router.post("/{loan_id}/return")
+def return_book(loan_id: str, svc: LoanService = Depends(get_service_instance)):
+    """
+    Return a loaned book.
+    Args:
+        loan_id (str): The ID of the loan to return.
+        svc (LoanService): The loan service instance.
+    Returns:
+        The updated loan.
+    """
+    return svc.return_loan(loan_id)

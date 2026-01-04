@@ -13,12 +13,31 @@ from app.core.exceptions import (
     ActiveLoanExistsException,
     BorrowerNotFoundException,
 )
-
+from app.schemas.internal_event import LoanValidationFailed
+from app.core.events import publish_internal_event
+from app.core.producer import get_kafka_producer
+from app.core.producer import publish_message
 
 load_dotenv()
 # Base.metadata.create_all(engine)
 
 app = FastAPI(title="Library Management System", version="1.0.0")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """
+    Test Kafka connection on startup and log any connection issues.
+    """
+    print("Testing Kafka connection...")
+    test_message = {"test": "startup_connection_check"}
+    error = publish_message("system_startup", test_message)
+
+    if error:
+        publish_internal_event(error)
+    else:
+        print("Kafka connection successful!")
+
 
 app.include_router(auth.router)
 app.include_router(author.router, dependencies=[Depends(require_api_key_and_jwt)])
@@ -40,6 +59,11 @@ async def handle_already_borrowed(request, exc: BookAlreadyBorrowedException):
     """
     Handle cases when a book is already borrowed.
     """
+    publish_internal_event(
+        LoanValidationFailed(
+            reason="BookAlreadyBorrowed", validation_errors={"message": str(exc)}
+        )
+    )
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
@@ -48,6 +72,11 @@ async def handle_active_loan(request, exc: ActiveLoanExistsException):
     """
     Handle cases when an active loan exists.
     """
+    publish_internal_event(
+        LoanValidationFailed(
+            reason="ActiveLoanExists", validation_errors={"message": str(exc)}
+        )
+    )
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 

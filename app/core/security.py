@@ -5,6 +5,9 @@ from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from app.schemas.internal_event import SecurityAuthFailed
+from app.core.events import publish_internal_event
+
 
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -92,6 +95,7 @@ def require_api_key(x_api_key: str | None = Security(api_key_header)):
         HTTPException: If the API key is missing or invalid.
     """
     if not x_api_key or not validate_api_key(x_api_key):
+        publish_internal_event(SecurityAuthFailed(reason="Invalid or missing API key"))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key",
@@ -122,11 +126,17 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, secret, algorithms=[algorithm])
         username: str = payload.get("sub")
         if username is None:
+            publish_internal_event(
+                SecurityAuthFailed(
+                    reason="Could not validate credentials - missing username in token"
+                )
+            )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials",
             )
     except JWTError:
+        publish_internal_event(SecurityAuthFailed(reason="Invalid or malformed token"))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or malformed token",
@@ -140,6 +150,11 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         )
 
     if datetime.now(timezone.utc).timestamp() > exp:
+        publish_internal_event(
+            SecurityAuthFailed(
+                reason="Token expired", user_identifier=str(payload.get("sub"))
+            )
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
