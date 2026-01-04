@@ -1,5 +1,5 @@
 from app.schemas.internal_event import InternalEvent
-from app.schemas.domain_event import DomainEventSchema
+from app.domain.entities.domain_event import DomainEventSchema
 
 
 def publish_internal_event(event: InternalEvent):

@@ -11,7 +11,11 @@ from app.schemas.borrower import (
     BorrowerUpdate,
     Borrower as BorrowerSchema,
 )
-from app.schemas.domain_event import BorrowerCreated, BorrowerUpdated, BorrowerDeleted
+from app.domain.entities.borrower import (
+    BorrowerCreated,
+    BorrowerUpdated,
+    BorrowerDeleted,
+)
 from app.schemas.loan import Loan as LoanSchema
 from app.core.events import publish_domain_event
 

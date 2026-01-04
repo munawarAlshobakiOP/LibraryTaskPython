@@ -8,7 +8,7 @@ from app.repositories.author_repository import AuthorRepositoryInterface
 from app.repositories.book_repository import BookRepositoryInterface
 from app.repositories.loan_repository import LoanRepositoryInterface
 from app.schemas.book import BookCreate, BookUpdate, Book as BookSchema
-from app.schemas.domain_event import BookCreated, BookUpdated, BookDeleted
+from app.domain.entities.book import BookCreated, BookUpdated, BookDeleted
 from app.core.events import publish_domain_event
 
 

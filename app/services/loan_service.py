@@ -6,7 +6,7 @@ from typing import Optional
 from app.core.exceptions import BookAlreadyBorrowedException, NotFoundException
 from app.models.loan import Loan as LoanModel
 from app.repositories.loan_repository import LoanRepositoryInterface
-from app.schemas.domain_event import LoanCreated, LoanReturned
+from app.domain.entities.loan import LoanCreated, LoanReturned
 from app.schemas.loan import LoanCreate, Loan as LoanSchema
 from app.core.events import publish_domain_event
 
