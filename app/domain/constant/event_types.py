@@ -21,4 +21,3 @@ class EventTypes:
 
     LOAN_CREATED: Final[str] = "loan.created"
     LOAN_RETURNED: Final[str] = "loan.returned"
-
